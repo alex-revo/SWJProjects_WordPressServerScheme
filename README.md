@@ -1,4 +1,5 @@
 # WordPress Update Server Setup Guide
+<img width="1001" height="890" alt="image" src="https://github.com/user-attachments/assets/2056c295-f472-4e53-881e-842213e2ec9d" />
 
 ## Обзор
 
@@ -65,7 +66,13 @@
 - Версии отображаются от новой к старой
 - Поддерживается мультиязычность (текущий язык → язык по умолчанию)
 
+<img width="813" height="628" alt="image" src="https://github.com/user-attachments/assets/d24e2263-d11a-450c-bcad-42934071add9" />
+
+
 ## Настройка метаданных через плагин
+
+<img width="1352" height="732" alt="image" src="https://github.com/user-attachments/assets/24ae2800-3cae-467c-9f4e-7726ead99cfa" />
+
 
 Для переопределения метаданных конкретного проекта:
 
