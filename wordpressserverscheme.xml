@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="swjprojects" method="upgrade">
+	<name>PLG_SWJPROJECTS_WORDPRESSSERVERSCHEME</name>
+	<author>Alex Revo</author>
+	<creationDate>27.11.2025</creationDate>
+	<copyright>(C) 2025 Alex Revo</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>help@alexrevo.pw</authorEmail>
+	<authorUrl>https://alexrevo.pw</authorUrl>
+    <version>1.0.0</version>
+    <description>PLG_SWJPROJECTS_WORDPRESSSERVERSCHEME_DESC</description>
+    <scriptfile>script.php</scriptfile>
+    <namespace path="src">Joomla\Plugin\Swjprojects\Wordpressserverscheme</namespace>
+	<files>
+        <filename plugin="wordpressserverscheme">wordpressserverscheme.php</filename>
+        <folder>src</folder>
+        <folder>services</folder>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="projects_metadata" type="subform" label="Project Metadata Overrides" description="Configure specific WordPress metadata for each project." multiple="true" layout="joomla.form.field.subform.repeatable">
+                    <form>
+                        <field name="project_id" type="sql" label="Project" query="SELECT id, element FROM #__swjprojects_projects ORDER BY element ASC" key_field="id" value_field="element" required="true" header="Select a Project" />
+                        <field name="author_name" type="text" label="Author Name" description="Override author name." />
+                        <field name="author_url" type="url" label="Author URL" description="Override author URL." />
+                        <field name="requires_php" type="text" label="Requires PHP" default="7.4" description="Minimum PHP version required." />
+                        <field name="installation" type="textarea" label="Installation Instructions" filter="raw" rows="5" description="Custom installation instructions (HTML allowed)." />
+                    </form>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+	<updateservers>
+		<server type="extension" priority="1" name="SW JProjects WordPress Server Scheme">https://your-url-here.ru/jupdate?element=wordpressserverscheme</server>
+	</updateservers>
+	<changelogurl>https://your-url-here.ru/jchangelog?element=wordpressserverscheme</changelogurl>
+</extension>
