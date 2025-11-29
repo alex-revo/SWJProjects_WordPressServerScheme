@@ -236,11 +236,75 @@ Version: 1.0.4
 */
 define('UPDATE_SERVER', 'https://yoursite.com/getupdates.html?element=my-awesome-plugin');
 define('PLUGIN_SLUG', 'my-awesome-plugin');
-// Проверка обновлений
+define('LICENSE_KEY_OPTION', 'my_plugin_license_key');
+
+// --- Страница настроек для ввода ключа лицензии ---
+
+add_action('admin_menu', 'my_plugin_add_settings_page');
+function my_plugin_add_settings_page() {
+    add_options_page(
+        'My Plugin License',
+        'My Plugin License',
+        'manage_options',
+        'my-plugin-license',
+        'my_plugin_settings_page'
+    );
+}
+
+add_action('admin_init', 'my_plugin_register_settings');
+function my_plugin_register_settings() {
+    register_setting('my_plugin_license_group', LICENSE_KEY_OPTION);
+    
+    add_settings_section(
+        'my_plugin_license_section',
+        'License Key Settings',
+        'my_plugin_license_section_callback',
+        'my-plugin-license'
+    );
+    
+    add_settings_field(
+        LICENSE_KEY_OPTION,
+        'Download Key',
+        'my_plugin_license_field_render',
+        'my-plugin-license',
+        'my_plugin_license_section'
+    );
+}
+
+function my_plugin_license_section_callback() {
+    echo 'Enter your license key to enable automatic updates from the update server.';
+}
+
+function my_plugin_license_field_render() {
+    $value = get_option(LICENSE_KEY_OPTION);
+    ?>
+    <input type='text' name='<?php echo LICENSE_KEY_OPTION; ?>' value='<?php echo esc_attr($value); ?>' class="regular-text code">
+    <p class="description">Your download key from the update server.</p>
+    <?php
+}
+
+function my_plugin_settings_page() {
+    ?>
+    <div class="wrap">
+        <h1>My Plugin License Settings</h1>
+        <form action='options.php' method='post'>
+            <?php
+            settings_fields('my_plugin_license_group');
+            do_settings_sections('my-plugin-license');
+            submit_button();
+            ?>
+        </form>
+    </div>
+    <?php
+}
+
+// --- Проверка обновлений ---
+
 add_filter('pre_set_site_transient_update_plugins', function($transient) {
     if (empty($transient->checked)) return $transient;
     $current_version = '1.0.4';
-    $response = wp_remote_get(UPDATE_SERVER . '&download_key=' . get_option('my_plugin_license_key'));
+    $license_key = get_option(LICENSE_KEY_OPTION);
+    $response = wp_remote_get(UPDATE_SERVER . '&download_key=' . urlencode($license_key));
     if (is_wp_error($response)) return $transient;
     $data = json_decode(wp_remote_retrieve_body($response));
     if (version_compare($current_version, $data->version, '<')) {
@@ -258,12 +322,15 @@ add_filter('pre_set_site_transient_update_plugins', function($transient) {
     }
     return $transient;
 });
-// Информация о плагине (для окна "View Details")
+
+// --- Информация о плагине (для окна "View Details") ---
+
 add_filter('plugins_api', function($res, $action, $args) {
     if ($action !== 'plugin_information' || $args->slug !== PLUGIN_SLUG) {
         return $res;
     }
-    $response = wp_remote_get(UPDATE_SERVER . '&download_key=' . get_option('my_plugin_license_key'));
+    $license_key = get_option(LICENSE_KEY_OPTION);
+    $response = wp_remote_get(UPDATE_SERVER . '&download_key=' . urlencode($license_key));
     if (is_wp_error($response)) return $res;
     $data = json_decode(wp_remote_retrieve_body($response));
     $res = new stdClass();
@@ -282,6 +349,20 @@ add_filter('plugins_api', function($res, $action, $args) {
     $res->banners = (array) $data->banners;
     return $res;
 }, 20, 3);
+```
+
+**Что добавлено:**
+
+1. **Страница настроек** в WordPress админке (`Settings → My Plugin License`)
+2. **Поле для ввода ключа лицензии** с сохранением в базу данных WordPress
+3. **Использование ключа** при запросах к серверу обновлений
+4. **URL-кодирование ключа** для безопасной передачи
+
+После установки плагина пользователь может:
+- Перейти в `Settings → My Plugin License`
+- Ввести свой `download_key` полученный от вас
+- Сохранить настройки
+- Плагин автоматически будет использовать этот ключ при проверке обновлений
 ```
 
 ## Рекомендации по заполнению данных
